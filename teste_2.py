@@ -13,9 +13,9 @@ def loginAdmin():
 
         [sg.Push()],
 
-        [sg.Input('Usuário', key='-LOGIN-')],
+        [sg.Input(key='-LOGIN-')],
 
-        [sg.Input('Senha', key='-SENHA-')],
+        [sg.Input(password_char='*', key='-SENHA-')],
 
         [sg.Push(), sg.Button('ENTRAR', key='-BTN_ENTRAR-'), sg.Push()],
 
@@ -47,19 +47,31 @@ def criarEvento():
 # Criando a janela
 janela = criarEvento()
 
-loginAdmin().read()
+# loginAdmin().read()
+
+telaAdmin, telaNovoEvento = loginAdmin(), None
 
 while True:
 
-    event, values = janela.read()
+    window, events, values = sg.read_all_windows()
 
-    if event == sg.WIN_CLOSED:
+    if window == telaAdmin and events == sg.WIN_CLOSED:
         break
 
-    elif event == 'ADICIONAR':
-        janela.extend_layout(janela['-EVENTO-'],
-                             [[sg.Image('img/peca_1.png'), sg.Button('DETALHES', key='-DETALHES-')]])
+    elif window == telaAdmin and events == '-BTN_ENTRAR-':
+        if values['-LOGIN-'] == 'admin' and values['-SENHA-'] == '123':
+            telaNovoEvento = criarEvento()
+            telaAdmin.hide()
 
-    elif event == 'REMOVER':
+    elif window == telaNovoEvento and events == sg.WIN_CLOSED:
+        break
+
+    elif window == telaNovoEvento and events == 'ADICIONAR':
+        telaNovoEvento = criarEvento()
+        telaNovoEvento.extend_layout(telaNovoEvento['-EVENTO-'],
+                                     [[sg.Image('img/peca_1.png'), sg.Button('DETALHES', key='-DETALHES-')]])
+        telaNovoEvento.close()
+
+    elif events == 'REMOVER':
         janela.close()
         janela = criarEvento()
